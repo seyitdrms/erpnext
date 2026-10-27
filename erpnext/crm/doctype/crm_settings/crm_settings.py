@@ -77,7 +77,14 @@ class CRMSettings(Document):
 		custom_fields = self.get_frappe_crm_custom_fields()
 
 		if self.enable_frappe_crm_data_synchronization:
+			from erpnext.crm.customer_organization import (
+				add_customer_organization_constraint,
+				validate_customer_organization_field_definitions,
+			)
+
+			validate_customer_organization_field_definitions()
 			create_custom_fields(custom_fields, ignore_validate=True)
+			add_customer_organization_constraint()
 
 	@staticmethod
 	def get_frappe_crm_custom_fields():
@@ -96,8 +103,44 @@ class CRMSettings(Document):
 					"fieldtype": "Data",
 					"label": "Frappe CRM Deal",
 					"insert_after": "prospect_name",
-				}
+				},
+				{
+					"fieldname": "crm_organization",
+					"fieldtype": "Data",
+					"label": "Frappe CRM Organization",
+					"read_only": 1,
+					"no_copy": 1,
+					"insert_after": "crm_deal",
+				},
+				{
+					"fieldname": "crm_site",
+					"fieldtype": "Data",
+					"label": "Frappe CRM Site",
+					"length": 255,
+					"read_only": 1,
+					"no_copy": 1,
+					"insert_after": "crm_organization",
+				},
 			],
 		}
+		for doctype in ("Contact", "Address"):
+			custom_fields[doctype] = [
+				{
+					"fieldname": "crm_record",
+					"fieldtype": "Data",
+					"label": "Frappe CRM Record",
+					"read_only": 1,
+					"no_copy": 1,
+				},
+				{
+					"fieldname": "crm_site",
+					"fieldtype": "Data",
+					"label": "Frappe CRM Site",
+					"length": 255,
+					"read_only": 1,
+					"no_copy": 1,
+					"insert_after": "crm_record",
+				},
+			]
 
 		return custom_fields

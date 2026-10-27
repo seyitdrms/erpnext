@@ -189,6 +189,9 @@ class Customer(TransactionBase):
 		self.update_lead_status()
 
 	def validate(self):
+		from erpnext.crm.customer_organization import validate_customer_organization
+
+		validate_customer_organization(self)
 		self.flags.is_new_doc = self.is_new()
 		self.flags.old_lead = self.lead_name
 		self.validate_customer_group()
@@ -500,6 +503,9 @@ class Customer(TransactionBase):
 				)
 
 	def on_trash(self):
+		from erpnext.crm.customer_organization import validate_customer_organization_deletion
+
+		validate_customer_organization_deletion(self)
 		if self.customer_primary_contact:
 			self.db_set("customer_primary_contact", None)
 		if self.customer_primary_address:
@@ -511,6 +517,9 @@ class Customer(TransactionBase):
 
 	def before_rename(self, olddn, newdn, merge=False):
 		if merge:
+			from erpnext.crm.customer_organization import validate_customer_organization_merge
+
+			validate_customer_organization_merge(self, newdn)
 			validate_party_currency_before_merging("Customer", olddn, newdn)
 
 	def after_rename(self, olddn, newdn, merge=False):

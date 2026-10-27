@@ -22,6 +22,10 @@ def execute():
 	if enable_frappe_crm_data_sync or crm_deal_exists_in_quotation or crm_deal_exists_in_customer:
 		return
 
-	custom_fields = CRMSettings.get_frappe_crm_custom_fields()
+	custom_fields = {
+		doctype: [field for field in fields if field["fieldname"] == "crm_deal"]
+		for doctype, fields in CRMSettings.get_frappe_crm_custom_fields().items()
+		if any(field["fieldname"] == "crm_deal" for field in fields)
+	}
 
 	delete_custom_fields(custom_fields)

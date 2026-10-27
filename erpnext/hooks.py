@@ -412,6 +412,9 @@ period_closing_doctypes = [
 sqlite_search = ["erpnext.stock.doctype.item.item_search.ItemSearch"]
 
 doc_events = {
+	("Contact", "Address"): {
+		"validate": "erpnext.crm.customer_organization.validate_crm_record",
+	},
 	"*": {
 		"validate": [
 			"erpnext.support.doctype.service_level_agreement.service_level_agreement.apply",
